@@ -1,5 +1,5 @@
 export function usecurrencify(amount) {
-  // formatear: " + $ 4,999.99 | "- $ 999.00"
+  // format: " + $ 4,999.99 | "- $ 999.00"
 
   let posNegSymbol = '';
   if (amount > 0) posNegSymbol = '+';
