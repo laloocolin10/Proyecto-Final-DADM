@@ -18,8 +18,8 @@
 
 <script setup>
 import { ref } from 'vue';
-import { useCurrencify } from 'src/use/useCurrencify';
-import { useAmountColorClass } from 'src/use/useAmountColorClass';
+import { useCurrencify } from 'src/use/useCurrencify'
+import { useAmountColorClass } from 'src/use/useAmountColorClass'
 
 const entries = ref([
   { id: 'id1', name: 'Salary', amount: 4999.99 },
