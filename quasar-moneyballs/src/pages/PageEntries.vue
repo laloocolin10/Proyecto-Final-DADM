@@ -15,7 +15,7 @@
         </q-item-section>
 
         <q-item-section side top>
-         {{ entry.amount }}
+         {{ currencify(entry.amount) }}
         </q-item-section>
       </q-item>
     </q-list>
@@ -59,5 +59,28 @@ const entries = ref([//+
   },//-
 //-
 ])
+
+
+/*
+currencify
+*/
+function currencify(amount) {
+  // formatear: " + $ 4,999.99 | "- $ 999.00"
+
+  let posNegSymbol = '';
+  if (amount > 0) posNegSymbol = '+';
+  else if (amount < 0) posNegSymbol = '-';
+
+  const currencySymbol = '$',
+        amountPositive = Math.abs(amount),
+        amountFormatted = amountPositive.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+
+  return `${posNegSymbol} ${currencySymbol} ${amountFormatted}`
+}
+
+
 
 </script>
