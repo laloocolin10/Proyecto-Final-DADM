@@ -156,10 +156,13 @@ const onEntrySlideRight = ({ reset }, entry) => {
 /* Delete entry */
 const deleteEntry = (entryId) => {
   const index = entries.value.findIndex((entry) => entry.id === entryId);
-  if (index !== -1) {
-    entries.value.splice(index, 1);
-  } else {
-    console.error(`Entry with ID ${entryId} not found.`);
-  }
+  entries.value.splice(index, 1);
+  $q.notify({
+    message: 'Entry deleted',
+    position: 'top'
+
+  })
+
+
 };
 </script>
