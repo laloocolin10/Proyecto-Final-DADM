@@ -3,7 +3,7 @@
     <div class="q-pa-md">
       <q-list bordered separator>
         <q-slide-item
-          @right="onEntrySlideRight"
+          @right="onEntrySlideRight($event, entry.id)"
           v-for="entry in entries"
           :key="entry.id"
           left-color="positive"
@@ -143,7 +143,7 @@ const onRight = () => {
 
 /*slide items*/
 
-const onEntrySlideRight = ({reset}) => { 
+const onEntrySlideRight = ({reset, entryId}) => {
   $q.dialog({
         title: 'Delete entry',
         message: 'Delete this entry?',
@@ -151,20 +151,28 @@ const onEntrySlideRight = ({reset}) => {
         persistent: true,
         ok: {
           label: 'Delete',
-          label: 'Negative',
+          color: 'negative',
           noCaps: true
         },
        cancel: {
-          label: 'Primary',
+          color: 'primary',
           noCaps: true
         }
       }).onOk(() => {
-         console.log('>>>> OK')
-     
+        deleteEntry(entryId)
+
       }).onCancel(() => {
-         console.log('>>>> Cancel')
          reset();
       })
 
+}
+
+
+/* delete entry*/
+
+const deleteEntry =(entryId) => {
+  entries.value.findIndex(entry => entry.id === entryId)
+  console.log('index', index)
+entries.value.splice(index, 1)
 }
 </script>
