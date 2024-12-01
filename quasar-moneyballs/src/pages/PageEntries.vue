@@ -24,13 +24,17 @@
           Balance:
         </div>
 
-        <div :class="useAmountColorClass(balance)" class="col text-h6 text-right">
+        <div
+           :class="useAmountColorClass(balance)"
+           class="col text-h6 text-right">
           {{ useCurrencify(balance) }}
         </div>
       </div>
-      <div class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary">
+
+      <q-form @submit="addEntry" class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary">
         <div class="col">
           <q-input
+            v-model="addEntryForm.name"
             input-class="text-right"
             placeholder="Name"
             bg-color="white"
@@ -40,6 +44,7 @@
         </div>
         <div class="col">
           <q-input
+            v-model="addEntryForm.amount"
             placeholder="Amount"
             bg-color="white"
             type="number"
@@ -50,18 +55,20 @@
         </div>
         <div class="col col-auto">
           <q-btn
+            type="submit"
             color="primary"
             icon="add"
             round
           />
         </div>
-      </div>
+      </q-form>
     </q-footer>
   </q-page>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, reactive } from 'vue';
+import { uid } from 'quasar';
 import { useCurrencify } from 'src/use/useCurrencify';
 import { useAmountColorClass } from 'src/use/useAmountColorClass';
 
@@ -78,4 +85,19 @@ const balance = computed(() => {
     return accumulator + amount;
   }, 0);
 });
+
+/* Add entry form */
+const addEntryForm = reactive({
+  name: '',
+  amount: null
+});
+
+const addEntry = () => {
+  const newEntry = {
+    id: uid(),
+    name: addEntryForm.name,
+    amount: addEntryForm.amount
+  }
+  entries.value.push(newEntry);
+}
 </script>
