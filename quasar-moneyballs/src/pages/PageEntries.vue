@@ -3,12 +3,12 @@
     <div class="q-pa-md">
       <q-list bordered separator>
         <q-slide-item
-          @right="onEntrySlideRight($event, entry.id)"
+          @right="onEntrySlideRight($event, entry)"
           v-for="entry in entries"
           :key="entry.id"
           left-color="positive"
-          right-color="negative">
-
+          right-color="negative"
+        >
           <!--<template v-slot:left>
             <q-icon name="done" />
           </template>-->
@@ -20,13 +20,16 @@
           <q-item>
             <q-item-section
               class="text-weight-bold"
-              :class="useAmountColorClass(entry.amount)">
+              :class="useAmountColorClass(entry.amount)"
+            >
               {{ entry.name }}
             </q-item-section>
 
             <q-item-section
               class="text-weight-bold"
-              :class="useAmountColorClass(entry.amount)" side>
+              :class="useAmountColorClass(entry.amount)"
+              side
+            >
               {{ useCurrencify(entry.amount) }}
             </q-item-section>
           </q-item>
@@ -45,7 +48,7 @@
         </div>
       </div>
 
-      <q-form @submit="addEntry" class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary">
+      <q-form @submit.prevent="addEntry" class="row q-px-sm q-pb-sm q-col-gutter-sm bg-primary">
         <div class="col">
           <q-input
             v-model="addEntryForm.name"
@@ -82,97 +85,81 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive, setBlockTracking } from 'vue';
+import { ref, computed, reactive } from 'vue';
 import { uid, useQuasar } from 'quasar';
 import { useCurrencify } from 'src/use/useCurrencify';
 import { useAmountColorClass } from 'src/use/useAmountColorClass';
 
-
-/*quasar*/
-
-const $q = useQuasar()
+const $q = useQuasar();
 
 const entries = ref([
   { id: 'id1', name: 'Salary', amount: 4999.99 },
   { id: 'id2', name: 'Rent', amount: -999 },
   { id: 'id3', name: 'Phone', amount: -14.99 },
-  { id: 'id4', name: 'Unknown', amount: 0 }
+  { id: 'id4', name: 'Unknown', amount: 0 },
 ]);
 
 /* Balance Calculation */
 const balance = computed(() => {
-  return entries.value.reduce((accumulator, { amount }) => {
-    return accumulator + amount;
-  }, 0);
+  return entries.value.reduce((accumulator, { amount }) => accumulator + amount, 0);
 });
 
 /* Add entry form */
-const nameRef = ref(null);  // Corregido el nombre de la referencia
+const nameRef = ref(null);
 
 const addEntryFormDefault = {
   name: '',
-  amount: null
+  amount: null,
 };
 
-// Corregido el uso de 'reactive' para crear el objeto de formulario correctamente
-const addEntryForm = reactive({
-  name: '',
-  amount: null
-});
+const addEntryForm = reactive({ ...addEntryFormDefault });
 
 const addEntryFormReset = () => {
   Object.assign(addEntryForm, addEntryFormDefault);
-  nameRef.value.focus();  // Usando la referencia correctamente
+  nameRef.value.focus();
 };
 
 const addEntry = () => {
-  const newEntry = Object.assign({}, addEntryForm, { id: uid() });
+  const newEntry = { ...addEntryForm, id: uid() };
   entries.value.push(newEntry);
   addEntryFormReset();
 };
 
-// Implementa las acciones de deslizamiento
-const onLeft = () => {
-  console.log('Left action triggered');
-};
-
-const onRight = () => {
-  console.log('Right action triggered');
-};
-
-
-/*slide items*/
-
-const onEntrySlideRight = ({reset, entryId}) => {
+/* Handle right slide actions */
+const onEntrySlideRight = ({ reset }, entry) => {
   $q.dialog({
-        title: 'Delete entry',
-        message: 'Delete this entry?',
-        cancel: true,
-        persistent: true,
-        ok: {
-          label: 'Delete',
-          color: 'negative',
-          noCaps: true
-        },
-       cancel: {
-          color: 'primary',
-          noCaps: true
-        }
-      }).onOk(() => {
-        deleteEntry(entryId)
+  title: 'Delete entry',
+  message: `
+    Delete this entry?
+    <div class="text-weight-bold ${useAmountColorClass(entry.amount)}">
+      ${entry.name} : ${useCurrencify(entry.amount)}
+    </div>
+  `,
+    cancel: true,
+    persistent: true,
+    html: true,
+    ok: {
+      label: 'Delete',
+      color: 'negative',
+      noCaps: true,
+    },
+    cancel: {
+      label: 'Cancel',
+      color: 'primary',
+      noCaps: true,
+    },
+  })
+    .onOk(() => deleteEntry(entry.id))
+    .onCancel(() => reset());
+};
 
-      }).onCancel(() => {
-         reset();
-      })
-
-}
-
-
-/* delete entry*/
-
-const deleteEntry =(entryId) => {
-  entries.value.findIndex(entry => entry.id === entryId)
-  console.log('index', index)
-entries.value.splice(index, 1)
-}
+/* Delete entry */
+const deleteEntry = (entryId) => {
+  const index = entries.value.findIndex((entry) => entry.id === entryId);
+  if (index !== -1) {
+    entries.value.splice(index, 1);
+  } else {
+    console.error(`Entry with ID ${entryId} not found.`);
+  }
+};
 </script>
