@@ -2,19 +2,35 @@
   <q-page>
     <div class="q-pa-md">
       <q-list bordered separator>
-        <q-item v-for="entry in entries" :key="entry.id">
-          <q-item-section
-            class="text-weight-bold"
-            :class="useAmountColorClass(entry.amount)">
-            {{ entry.name }}
-          </q-item-section>
+        <q-slide-item
+          @right="onRight"
+          v-for="entry in entries"
+          :key="entry.id"
+          left-color="positive"
+          right-color="negative">
 
-          <q-item-section
-            class="text-weight-bold"
-            :class="useAmountColorClass(entry.amount)" side>
-            {{ useCurrencify(entry.amount) }}
-          </q-item-section>
-        </q-item>
+          <!--<template v-slot:left>
+            <q-icon name="done" />
+          </template>-->
+
+          <template v-slot:right>
+            <q-icon name="delete" />
+          </template>
+
+          <q-item>
+            <q-item-section
+              class="text-weight-bold"
+              :class="useAmountColorClass(entry.amount)">
+              {{ entry.name }}
+            </q-item-section>
+
+            <q-item-section
+              class="text-weight-bold"
+              :class="useAmountColorClass(entry.amount)" side>
+              {{ useCurrencify(entry.amount) }}
+            </q-item-section>
+          </q-item>
+        </q-slide-item>
       </q-list>
     </div>
 
@@ -24,9 +40,7 @@
           Balance:
         </div>
 
-        <div
-           :class="useAmountColorClass(balance)"
-           class="col text-h6 text-right">
+        <div :class="useAmountColorClass(balance)" class="col text-h6 text-right">
           {{ useCurrencify(balance) }}
         </div>
       </div>
@@ -88,26 +102,36 @@ const balance = computed(() => {
 });
 
 /* Add entry form */
-const refName = ref(null)
+const nameRef = ref(null);  // Corregido el nombre de la referencia
 
 const addEntryFormDefault = {
   name: '',
   amount: null
+};
 
-}
-
+// Corregido el uso de 'reactive' para crear el objeto de formulario correctamente
 const addEntryForm = reactive({
-  addEntryFormDefault
+  name: '',
+  amount: null
 });
 
 const addEntryFormReset = () => {
-Object.assign(addEntryForm, addEntryFormDefault)
-nameRef.value.focus()
-}
+  Object.assign(addEntryForm, addEntryFormDefault);
+  nameRef.value.focus();  // Usando la referencia correctamente
+};
 
 const addEntry = () => {
-  const newEntry = Object.assign({}, addEntryForm, {id: uid()});
+  const newEntry = Object.assign({}, addEntryForm, { id: uid() });
   entries.value.push(newEntry);
-  addEntryFormReset()
-}
+  addEntryFormReset();
+};
+
+// Implementa las acciones de deslizamiento
+const onLeft = () => {
+  console.log('Left action triggered');
+};
+
+const onRight = () => {
+  console.log('Right action triggered');
+};
 </script>
