@@ -3,7 +3,7 @@
     <div class="q-pa-md">
       <q-list bordered separator>
         <q-slide-item
-          @right="onRight"
+          @right="onEntrySlideRight"
           v-for="entry in entries"
           :key="entry.id"
           left-color="positive"
@@ -82,10 +82,15 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive } from 'vue';
-import { uid } from 'quasar';
+import { ref, computed, reactive, setBlockTracking } from 'vue';
+import { uid, useQuasar } from 'quasar';
 import { useCurrencify } from 'src/use/useCurrencify';
 import { useAmountColorClass } from 'src/use/useAmountColorClass';
+
+
+/*quasar*/
+
+const $q = useQuasar()
 
 const entries = ref([
   { id: 'id1', name: 'Salary', amount: 4999.99 },
@@ -134,4 +139,32 @@ const onLeft = () => {
 const onRight = () => {
   console.log('Right action triggered');
 };
+
+
+/*slide items*/
+
+const onEntrySlideRight = ({reset}) => { 
+  $q.dialog({
+        title: 'Delete entry',
+        message: 'Delete this entry?',
+        cancel: true,
+        persistent: true,
+        ok: {
+          label: 'Delete',
+          label: 'Negative',
+          noCaps: true
+        },
+       cancel: {
+          label: 'Primary',
+          noCaps: true
+        }
+      }).onOk(() => {
+         console.log('>>>> OK')
+     
+      }).onCancel(() => {
+         console.log('>>>> Cancel')
+         reset();
+      })
+
+}
 </script>
