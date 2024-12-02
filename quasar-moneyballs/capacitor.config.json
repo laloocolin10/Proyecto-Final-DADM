@@ -1,0 +1,6 @@
+{
+  "appId": "com.moneyballs.app",
+  "appName": "quasar-moneyballs",
+  "webDir": "dist/spa",
+  "bundledWebRuntime": false
+}
